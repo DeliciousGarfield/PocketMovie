@@ -5,12 +5,12 @@
       <text class='section_title'>最近热映</text>
     </view>
     <scroll-view scroll-x="true" class='recent_movie_list'>
-      <view class='movie_preview_group' wx:for='{{recentMovieInfo.subjects.length / 3}}' wx:for-item='group_index' wx:key='{{group_index}}'>
-        <view class='movie_preview' wx:for='{{3}}' wx:key='{{index}}' wx:if='{{recentMovieInfo.subjects[group_index * 3 + index] != undefined}}'>
-          <image mode='aspectFit' class='movie_cover' src='{{recentMovieInfo.subjects[group_index * 3 + index].images.small}}'></image>
+      <view class='movie_preview_group' wx:for='{{recentMovieList.length / 3}}' wx:for-item='group_index' wx:key='{{group_index}}'>
+        <view class='movie_preview' wx:for='{{3}}' wx:key='{{index}}' wx:if='{{recentMovieList[group_index * 3 + index] != undefined}}'>
+          <image mode='aspectFit' class='movie_cover' src='{{recentMovieList[group_index * 3 + index].images.small}}'></image>
           <view class='movie_des'>
-            <text class='movie_title'>{{recentMovieInfo.subjects[group_index * 3 + index].title}}</text>
-            <text class='movie_rate'>{{recentMovieInfo.subjects[group_index * 3 + index].rating.average}}</text>
+            <text class='movie_title'>{{recentMovieList[group_index * 3 + index].title}}</text>
+            <text class='movie_rate'>{{recentMovieList[group_index * 3 + index].rating.average}}</text>
           </view>
         </view>
       </view>
@@ -29,7 +29,7 @@
       </radio-group>
     </view>
     <view class='category_movie_list'>
-      <view class='movie_preview' wx:for='{{newLoadedMovieInfo.subjects}}' wx:key='{{index}}' >
+      <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' >
           <image mode='aspectFit' class='movie_cover' src='{{item.cover}}'></image>
           <view class='movie_des'>
             <text class='movie_title'>{{item.title}}</text>

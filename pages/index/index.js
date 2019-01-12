@@ -9,13 +9,18 @@ Page({
   data: {
     movieType: ['剧情', '喜剧', '动作', '爱情', '科幻', '动画', '悬疑', '惊悚', '恐怖', '犯罪', '同性', '音乐', '歌舞', '传记', '历史', '战争', '西部', '奇幻', '冒险', '灾难', '武侠', '情色'],
     movieTypeIndex: 0,
-    recentMovieInfo: null,
-    newLoadedMovieInfo: null,
+    movieOffset: 0,
+    movieLoadCount: 20,
+    recentMovieList: [],
+    taggedMovieList: [],
     movieTitleMaxLen: 12
   },
   onLoad: function () {
     this.loadLatestMovies()
-    this.loadMovieByTag(this.data.movieTypeIndex)
+    this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
+  },
+  onReachBottom: function() {
+    this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
   },
   processRecentMovieInfo: function(recentMovieInfo) {
     for (let subject of recentMovieInfo.subjects) {
@@ -42,6 +47,8 @@ Page({
     return rating.toFixed(1)
   },
   onMovieTypeChange: function(e) {
+    this.setData({ movieOffset: 0})
+    this.setData({ taggedMovieList: []})
     let movieTypeIndex = Number.parseInt(e.detail.value)
     this.setData({ movieTypeIndex: movieTypeIndex})
     this.loadMovieByTag(this.data.movieType[movieTypeIndex])
@@ -54,7 +61,7 @@ Page({
       },
       success: res => {
         let recentMovieInfo = this.processRecentMovieInfo(res.data)
-        this.setData({ 'recentMovieInfo': recentMovieInfo })
+        this.setData({ 'recentMovieList': recentMovieInfo.subjects })
       },
       fail(err) {
         console.log(err)
@@ -63,17 +70,20 @@ Page({
   },
   loadMovieByTag: function(tag) {
     wx.request({
-      url: `${taggedMovieApi}?sort=rank&tag=${tag}`,
+      url: `${taggedMovieApi}?sort=rank&tag=${tag}&page_limit=${this.data.movieLoadCount}&page_start=${this.data.movieOffset}`,
       header: {
         'content-type': 'json'
       },
       success: res => {
         let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
-        this.setData({ 'newLoadedMovieInfo': newLoadedMovieInfo })
+        let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
+        this.setData({ 'taggedMovieList': taggedMovieList})
       },
       fail(err) {
         console.log(err)
       }
     })
+
+    this.setData({'movieOffset': this.data.movieOffset + this.data.movieLoadCount})
   },
 })
