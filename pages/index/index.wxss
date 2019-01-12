@@ -1,0 +1,72 @@
+/**index.wxss**/
+
+.container {
+  padding: 0;
+  background-color: rgb(250, 250, 250);
+}
+
+.recent_movie_list {
+  width: 675rpx;
+  white-space: nowrap;
+  margin-top: 20rpx;
+}
+
+.section_title {
+  margin-bottom: 20rpx;
+  margin-top: 20rpx;
+}
+
+.movie_preview_group {
+  display: inline-block;
+  width: 100%;
+}
+
+.movie_preview {
+  display: inline-block;
+  width: 33%;
+  height: 300rpx;
+  vertical-align: top;
+  white-space: normal;
+  margin-bottom: 70rpx;
+}
+
+.movie_cover {
+  width: 100px;
+  height: 120px;
+}
+
+.movie_des {
+  position: relative;
+  margin-top: 5rpx;
+  margin-bottom: 1rpx;
+  margin-left: 15rpx;
+  font-size: 25rpx;
+  width: 200rpx;
+}
+
+.movie_rate {
+  margin-left: 5rpx;
+  color: gold;
+}
+
+.movie_type_list {
+  width: 675rpx;
+  margin-top: 20rpx;
+}
+
+.movie_type_list  radio{
+   display: none;
+}
+
+.movie_type_list > label {
+  padding: 2rpx;
+  margin: 5rpx;
+  word-break: keep-all;
+  font-size: 25rpx;
+}
+
+.movie_type_list > label.checked {
+  background-color: rgb(37, 141, 205);
+  color: white;
+  border-radius: 5rpx;
+}

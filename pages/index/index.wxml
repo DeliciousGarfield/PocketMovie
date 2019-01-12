@@ -1,0 +1,41 @@
+<!--index.wxml-->
+<view class="container">
+  <view class='recent_movie'>
+    <view>
+      <text class='section_title'>最近热映</text>
+    </view>
+    <scroll-view scroll-x="true" class='recent_movie_list'>
+      <view class='movie_preview_group' wx:for='{{recentMovieInfo.subjects.length / 3}}' wx:for-item='group_index' wx:key='{{group_index}}'>
+        <view class='movie_preview' wx:for='{{3}}' wx:key='{{index}}' wx:if='{{recentMovieInfo.subjects[group_index * 3 + index] != undefined}}'>
+          <image mode='aspectFit' class='movie_cover' src='{{recentMovieInfo.subjects[group_index * 3 + index].images.small}}'></image>
+          <view class='movie_des'>
+            <text class='movie_title'>{{recentMovieInfo.subjects[group_index * 3 + index].title}}</text>
+            <text class='movie_rate'>{{recentMovieInfo.subjects[group_index * 3 + index].rating.average}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  <view class='movie_category'>
+    <view>
+      <text class='section_title'>找我喜欢</text>
+    </view>
+    <view>
+      <radio-group class='movie_type_list' bindchange="onMovieTypeChange">
+        <label wx:for='{{movieType}}' wx:key='{{index}}' class='{{index == movieTypeIndex? "checked" : ""}}'>
+          <radio value="{{index}}" checked="{{index == movieTypeIndex}}"/>
+          {{item}}
+        </label>
+      </radio-group>
+    </view>
+    <view class='category_movie_list'>
+      <view class='movie_preview' wx:for='{{newLoadedMovieInfo.subjects}}' wx:key='{{index}}' >
+          <image mode='aspectFit' class='movie_cover' src='{{item.cover}}'></image>
+          <view class='movie_des'>
+            <text class='movie_title'>{{item.title}}</text>
+            <text class='movie_rate'>{{item.rate}}</text>
+          </view>
+        </view>
+    </view>
+  </view>
+</view>
