@@ -1,5 +1,29 @@
 <!--index.wxml-->
 <view class="container">
+  <view class="mask" catchtouchmove="true" wx:if="{{showModal}}" bindtap='onMaskTap'></view>
+ 
+  <view class="modalDlg" wx:if="{{showModal}}">
+    
+      <view class='movie_item_cover'>
+        <image mode='aspectFit' src="{{movieItem.image}}"/>
+      </view>
+      <view class='movie_item_details'>
+        <text><text class='movie_item_label'>导演: </text><text wx:for="{{movieItem.attrs.director}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.director.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>编剧: </text><text wx:for="{{movieItem.attrs.writer}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.writer.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>主演: </text><text wx:for="{{movieItem.attrs.cast}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.cast.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>类型: </text><text wx:for="{{movieItem.attrs.movie_type}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_type.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>制片国家/地区: </text><text wx:for="{{movieItem.attrs.country}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.country.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>语言: </text><text wx:for="{{movieItem.attrs.language}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.language.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>上映日期: </text><text wx:for="{{movieItem.attrs.pubdate}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.pubdate.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>片长: </text><text wx:for="{{movieItem.attrs.movie_duration}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_duration.length - 1}}'> / </text></text></text>
+        <text><text class='movie_item_label'>又名: </text>{{movieItem.alt_title}}</text>
+    </view>
+    
+    <view class='movie_item_summary'>
+      <text><text class='movie_item_label'>剧情简介: </text>{{movieItem.summary}}</text>
+    </view>
+  </view>
+
   <view class='recent_movie'>
     <view>
       <text class='section_title'>最近热映</text>
@@ -7,7 +31,7 @@
     <scroll-view scroll-x="true" class='recent_movie_list'>
       <view class='movie_preview_group' wx:for='{{recentMovieList.length / 3}}' wx:for-item='group_index' wx:key='{{group_index}}'>
         <view class='movie_preview' wx:for='{{3}}' wx:key='{{index}}' wx:if='{{recentMovieList[group_index * 3 + index] != undefined}}'>
-          <image mode='aspectFit' class='movie_cover' src='{{recentMovieList[group_index * 3 + index].images.small}}'></image>
+          <image mode='aspectFit' class='movie_cover' src='{{recentMovieList[group_index * 3 + index].images.small}}' bindtap='onMovieItemTap' id='{{recentMovieList[group_index * 3 + index].id}}'></image>
           <view class='movie_des'>
             <text class='movie_title'>{{recentMovieList[group_index * 3 + index].title}}</text>
             <text class='movie_rate'>{{recentMovieList[group_index * 3 + index].rating.average}}</text>
@@ -30,7 +54,7 @@
     </view>
     <view class='category_movie_list'>
       <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' >
-          <image mode='aspectFit' class='movie_cover' src='{{item.cover}}'></image>
+          <image mode='aspectFit' class='movie_cover' src='{{item.cover}}' bindtap='onMovieItemTap' id='{{item.id}}'></image>
           <view class='movie_des'>
             <text class='movie_title'>{{item.title}}</text>
             <text class='movie_rate'>{{item.rate}}</text>

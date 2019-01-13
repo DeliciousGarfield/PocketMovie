@@ -1,6 +1,6 @@
 //index.js
 
-import { taggedMovieApi, latestMovieApi } from '../../constants/constants.js'
+import { taggedMovieApi, latestMovieApi, movieItemApi } from '../../constants/constants.js'
 
 //获取应用实例
 const app = getApp()
@@ -13,7 +13,12 @@ Page({
     movieLoadCount: 20,
     recentMovieList: [],
     taggedMovieList: [],
-    movieTitleMaxLen: 12
+    movieTitleMaxLen: 12,
+    showModal: false,
+    movieItem: null
+  },
+  preventTouchMove: function () {
+    return
   },
   onLoad: function () {
     this.loadLatestMovies()
@@ -37,6 +42,25 @@ Page({
     }
     return taggedMovieInfo
   },
+  processMovieItem: function(movieItem) {
+    movieItem.attrs.director = movieItem.attrs.director.slice(0, 5)
+    movieItem.attrs.writer = movieItem.attrs.writer.slice(0, 5)
+    movieItem.attrs.cast = movieItem.attrs.cast.slice(0, 5)
+
+    for (let i in movieItem.attrs.director) {
+      movieItem.attrs.director[i] = this.processMovieNames(movieItem.attrs.director[i])
+    }
+
+    for (let i in movieItem.attrs.writer) {
+      movieItem.attrs.writer[i] = this.processMovieNames(movieItem.attrs.writer[i])
+    }
+
+    for (let i in movieItem.attrs.cast) {
+      movieItem.attrs.cast[i] = this.processMovieNames(movieItem.attrs.cast[i])
+    }
+
+    return movieItem
+  },
   processMovieTitle: function(title) {
     if (title.length > this.data.movieTitleMaxLen) {
       title = title.substr(0, this.data.movieTitleMaxLen) + '...'
@@ -45,6 +69,13 @@ Page({
   },
   processMovieRating: rating => {
     return rating.toFixed(1)
+  },
+  processMovieNames: name => {
+    if (name.codePointAt(0) > 255) {
+      return name.split(' ', 1)
+    }
+
+    return name
   },
   onMovieTypeChange: function(e) {
     this.setData({ movieOffset: 0})
@@ -61,7 +92,7 @@ Page({
       },
       success: res => {
         let recentMovieInfo = this.processRecentMovieInfo(res.data)
-        this.setData({ 'recentMovieList': recentMovieInfo.subjects })
+        this.setData({ recentMovieList: recentMovieInfo.subjects })
       },
       fail(err) {
         console.log(err)
@@ -77,13 +108,34 @@ Page({
       success: res => {
         let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
         let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
-        this.setData({ 'taggedMovieList': taggedMovieList})
+        this.setData({ taggedMovieList: taggedMovieList})
       },
       fail(err) {
         console.log(err)
       }
     })
 
-    this.setData({'movieOffset': this.data.movieOffset + this.data.movieLoadCount})
+    this.setData({ movieOffset: this.data.movieOffset + this.data.movieLoadCount})
   },
+  onMovieItemTap: function(e) {
+    this.setData({ movieItem: null })
+    let movieItemId = e.currentTarget.id
+    wx.request({
+      url: `${movieItemApi}/${movieItemId}`,
+      header: {
+        'content-type': 'json'
+      },
+      success: res => {
+        let movieItem = this.processMovieItem(res.data)
+        this.setData({ movieItem: movieItem })
+      },
+      fail(err) {
+        console.log(err)
+      }
+    })
+    this.setData({ showModal: true})
+  },
+  onMaskTap: function() {
+    this.setData({ showModal: false })
+  }
 })
