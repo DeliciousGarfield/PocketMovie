@@ -8,15 +8,15 @@
         <image mode='aspectFit' src="{{movieItem.image}}"/>
       </view>
       <view class='movie_item_details'>
-        <text><text class='movie_item_label'>导演: </text><text wx:for="{{movieItem.attrs.director}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.director.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>编剧: </text><text wx:for="{{movieItem.attrs.writer}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.writer.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>主演: </text><text wx:for="{{movieItem.attrs.cast}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.cast.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>类型: </text><text wx:for="{{movieItem.attrs.movie_type}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_type.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>制片国家/地区: </text><text wx:for="{{movieItem.attrs.country}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.country.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>语言: </text><text wx:for="{{movieItem.attrs.language}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.language.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>上映日期: </text><text wx:for="{{movieItem.attrs.pubdate}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.pubdate.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>片长: </text><text wx:for="{{movieItem.attrs.movie_duration}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_duration.length - 1}}'> / </text></text></text>
-        <text><text class='movie_item_label'>又名: </text>{{movieItem.alt_title}}</text>
+        <text wx:if='{{movieItem.attrs.director != undefined}}'><text class='movie_item_label'>导演: </text><text wx:for="{{movieItem.attrs.director}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.director.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.writer != undefined}}'><text class='movie_item_label'>编剧: </text><text wx:for="{{movieItem.attrs.writer}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.writer.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.cast != undefined}}'><text class='movie_item_label'>主演: </text><text wx:for="{{movieItem.attrs.cast}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.cast.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.movie_type != undefined}}'><text class='movie_item_label'>类型: </text><text wx:for="{{movieItem.attrs.movie_type}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_type.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.country != undefined}}'><text class='movie_item_label'>制片国家/地区: </text><text wx:for="{{movieItem.attrs.country}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.country.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.language != undefined}}'><text class='movie_item_label'>语言: </text><text wx:for="{{movieItem.attrs.language}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.language.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.pubdate != undefined}}'><text class='movie_item_label'>上映日期: </text><text wx:for="{{movieItem.attrs.pubdate}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.pubdate.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.attrs.movie_duration != undefined}}'><text class='movie_item_label'>片长: </text><text wx:for="{{movieItem.attrs.movie_duration}}" wx:key="{{index}}">{{item}}<text wx:if='{{index != movieItem.attrs.movie_duration.length - 1}}'> / </text></text></text>
+        <text wx:if='{{movieItem.alt_title != undefined}}'><text class='movie_item_label'>又名: </text>{{movieItem.alt_title}}</text>
     </view>
     
     <view class='movie_item_summary'>

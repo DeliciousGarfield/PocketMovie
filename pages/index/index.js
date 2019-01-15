@@ -43,20 +43,25 @@ Page({
     return taggedMovieInfo
   },
   processMovieItem: function(movieItem) {
-    movieItem.attrs.director = movieItem.attrs.director.slice(0, 5)
-    movieItem.attrs.writer = movieItem.attrs.writer.slice(0, 5)
-    movieItem.attrs.cast = movieItem.attrs.cast.slice(0, 5)
-
-    for (let i in movieItem.attrs.director) {
-      movieItem.attrs.director[i] = this.processMovieNames(movieItem.attrs.director[i])
+    if (movieItem.attrs.director != undefined) {
+      movieItem.attrs.director = movieItem.attrs.director.slice(0, 5)
+      for (let i in movieItem.attrs.director) {
+        movieItem.attrs.director[i] = this.processMovieNames(movieItem.attrs.director[i])
+      }
     }
 
-    for (let i in movieItem.attrs.writer) {
-      movieItem.attrs.writer[i] = this.processMovieNames(movieItem.attrs.writer[i])
+    if (movieItem.attrs.writer != undefined) {
+      movieItem.attrs.writer = movieItem.attrs.writer.slice(0, 5)
+      for (let i in movieItem.attrs.writer) {
+        movieItem.attrs.writer[i] = this.processMovieNames(movieItem.attrs.writer[i])
+      }
     }
-
-    for (let i in movieItem.attrs.cast) {
-      movieItem.attrs.cast[i] = this.processMovieNames(movieItem.attrs.cast[i])
+    
+    if (movieItem.attrs.cast != undefined) {
+      movieItem.attrs.cast = movieItem.attrs.cast.slice(0, 5)
+      for (let i in movieItem.attrs.cast) {
+        movieItem.attrs.cast[i] = this.processMovieNames(movieItem.attrs.cast[i])
+      }
     }
 
     return movieItem

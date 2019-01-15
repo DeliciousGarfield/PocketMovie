@@ -27,7 +27,7 @@
     padding: 10rpx;
     background-color: rgb(250, 250, 250);
     border-radius: 5rpx;
-    font-size: 25rpx;
+    font-size: 30rpx;
     overflow: scroll;
 }
 
