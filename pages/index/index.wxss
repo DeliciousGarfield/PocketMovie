@@ -38,6 +38,7 @@
   margin-top: 20rpx;
   display: inline-block;
   vertical-align: middle;
+  overflow: scroll;
 }
 
 .section_title {
@@ -101,6 +102,11 @@
   border-radius: 5rpx;
 }
 
+.movie_item_box {
+  display: inline-block;
+  align-items: center;
+}
+
 .movie_item_cover {
   display: inline-block;
   margin: 10rpx;
@@ -132,7 +138,7 @@
 }
 
 .loader_container {
-    font-size: 60rpx;
+    font-size: 30rpx;
     color: rgba(0, 0, 0, 0.5);
     padding: 1em;
 }
@@ -193,4 +199,20 @@
 
 .arrow-right {
   transform: rotate(45deg);
+}
+
+.movie_item_des {
+  display: block;
+  position: relative;
+  margin-top: 5rpx;
+  margin-bottom: 1rpx;
+  font-size: 25rpx;
+  width: 225rpx;
+  text-align: center;
+}
+
+.movie_item_rate {
+  display: block;
+  margin-left: 5rpx;
+  color: gold;
 }
