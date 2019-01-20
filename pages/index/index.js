@@ -15,10 +15,12 @@ Page({
     taggedMovieList: [],
     movieTitleMaxLen: 12,
     showModal: false,
-    movieItem: null
+    movieItem: null,
+    recentMovieLoadStatus: 0, // 0:loading, 1:success, 2:fail
+    taggedMovieLoadStatus: 0, // 同上
   },
   preventTouchMove: function () {
-    return
+    return true
   },
   onLoad: function () {
     this.loadLatestMovies()
@@ -26,6 +28,11 @@ Page({
   },
   onReachBottom: function() {
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
+  },
+  onPullDownRefresh: function() {
+    this.resetPage()
+    this.onLoad()
+    wx.stopPullDownRefresh()
   },
   processRecentMovieInfo: function(recentMovieInfo) {
     for (let subject of recentMovieInfo.subjects) {
@@ -83,64 +90,140 @@ Page({
     return name
   },
   onMovieTypeChange: function(e) {
-    this.setData({ movieOffset: 0})
-    this.setData({ taggedMovieList: []})
+    this.resetTaggedMovieList()
     let movieTypeIndex = Number.parseInt(e.detail.value)
     this.setData({ movieTypeIndex: movieTypeIndex})
     this.loadMovieByTag(this.data.movieType[movieTypeIndex])
   },
   loadLatestMovies: function() {
+    let onSuccess = (res) => {
+      let recentMovieInfo = this.processRecentMovieInfo(res.data)
+      this.setData({ recentMovieList: recentMovieInfo.subjects })
+      this.setData({ recentMovieLoadStatus: 1 })
+    }
+
+    let onError = (err) => {
+      setTimeout(() => this.setData({ recentMovieLoadStatus: 2 }), 1000)
+      console.log(err)
+    }
+
     wx.request({
       url: `${latestMovieApi}`,
       header: {
         'content-type': 'json'
       },
       success: res => {
-        let recentMovieInfo = this.processRecentMovieInfo(res.data)
-        this.setData({ recentMovieList: recentMovieInfo.subjects })
+        if (res.statusCode == 200) {
+          onSuccess(res)
+        }
+        else {
+          onError(res)
+        } 
       },
-      fail(err) {
-        console.log(err)
+      fail: err => {
+        onError(err)
       }
     })
   },
   loadMovieByTag: function(tag) {
+    let onSuccess = (res) => {
+      let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
+      let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
+      this.setData({ taggedMovieList: taggedMovieList })
+      this.setData({ taggedMovieLoadStatus: 1 })
+    }
+
+    let onError = (err) => {
+      setTimeout(() => this.setData({ taggedMovieLoadStatus: 2 }), 1000)
+      if (this.data.taggedMovieList.length != 0) {
+        wx.showToast({
+          title: '获取更多内容失败，请稍后重试',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+
+      console.log(err)
+    }
+
     wx.request({
       url: `${taggedMovieApi}?sort=rank&tag=${tag}&page_limit=${this.data.movieLoadCount}&page_start=${this.data.movieOffset}`,
       header: {
         'content-type': 'json'
       },
       success: res => {
-        let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
-        let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
-        this.setData({ taggedMovieList: taggedMovieList})
+        if (res.statusCode == 200) {
+          onSuccess(res)
+        }
+        else {
+          onError(res)
+        }
       },
-      fail(err) {
-        console.log(err)
+      fail: err => {
+        onError(err)
       }
     })
 
     this.setData({ movieOffset: this.data.movieOffset + this.data.movieLoadCount})
   },
   onMovieItemTap: function(e) {
-    this.setData({ movieItem: null })
+    this.resetMovieItem()
+    this.setData({ showModal: true })
     let movieItemId = e.currentTarget.id
+
+    let onSuccess = (res) => {
+      let movieItem = this.processMovieItem(res.data)
+      this.setData({ movieItem: movieItem })
+    }
+
+    let onError = (err) => {
+      setTimeout(() => this.setData({ showModal: false }), 1000)
+      wx.showToast({
+        title: '加载失败，请稍后重试',
+        icon: 'none',
+        duration: 2000
+      })
+      console.log(err)
+    }
+
     wx.request({
       url: `${movieItemApi}/${movieItemId}`,
       header: {
         'content-type': 'json'
       },
       success: res => {
-        let movieItem = this.processMovieItem(res.data)
-        this.setData({ movieItem: movieItem })
+        if (res.statusCode == 200) {
+          onSuccess(res)
+        }
+        else {
+          onError(res)
+        }
       },
-      fail(err) {
-        console.log(err)
+      fail: err => {
+        onError(err)
       }
     })
-    this.setData({ showModal: true})
   },
   onMaskTap: function() {
     this.setData({ showModal: false })
+  },
+  resetMovieItem: function() {
+    this.setData({ movieItem: null })
+  },
+  resetRecentMovieList: function () {
+    this.setData({ recentMovieList: [] })
+  },
+  resetTaggedMovieList: function() {
+    this.setData({ movieOffset: 0 })
+    this.setData({ taggedMovieList: [] })
+  },
+  resetPage: function() {
+    this.setData({ recentMovieLoadStatus: 0 })
+    this.setData({ taggedMovieLoadStatus: 0 })
+    this.setData({ showModal: false })
+
+    this.resetRecentMovieList()
+    this.resetTaggedMovieList()
+    this.resetMovieItem()
   }
 })

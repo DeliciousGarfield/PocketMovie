@@ -3,7 +3,7 @@
     "pages/index/index"
   ],
   "window":{
-    "backgroundTextStyle":"light",
+    "backgroundTextStyle":"dark",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "口袋电影",
     "navigationBarTextStyle":"black"

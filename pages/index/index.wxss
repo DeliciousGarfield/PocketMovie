@@ -27,14 +27,17 @@
     padding: 10rpx;
     background-color: rgb(250, 250, 250);
     border-radius: 5rpx;
-    font-size: 30rpx;
+    font-size: 32rpx;
     overflow: scroll;
 }
 
 .recent_movie_list {
   width: 675rpx;
+  height: 400rpx;
   white-space: nowrap;
   margin-top: 20rpx;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .section_title {
@@ -126,4 +129,68 @@
 
 .movie_item_label {
   color: gray
+}
+
+.loader_container {
+    font-size: 60rpx;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 1em;
+}
+
+.loader {
+    background: currentcolor;
+    position: relative;
+    animation: loader 1s ease-in-out infinite;
+    animation-delay: 0.4s;
+    width: .25em;
+    height: .5em;
+}
+.loader:after,
+.loader:before {
+    content: '';
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    background: inherit;
+    animation: inherit;
+}
+.loader:before {
+    right: .5em;
+    animation-delay: 0.2s;
+}
+.loader:after {
+    left: .5em;
+    animation-delay: 0.6s;
+}
+@keyframes loader {
+    0%, 100% {
+        box-shadow: 0 0 0 currentcolor, 0 0 0 currentcolor;
+    }
+    50% {
+        box-shadow: 0 -.25em 0 currentcolor, 0 .25em 0 currentcolor;
+    }
+}
+
+.error_placeholder {
+  font-size: 30rpx;
+  color: gray;
+  margin-top: 50rpx;
+  margin-bottom: 50rpx;
+  margin-left: 20rpx;
+}
+
+.arrow {
+  display: inline-block;
+  width: 20rpx;
+  height: 20rpx;
+  border-top: 5rpx solid #999;
+  border-right: 5rpx solid #999;
+}
+
+.arrow-left {
+  transform: rotate(-135deg);
+}
+
+.arrow-right {
+  transform: rotate(45deg);
 }
