@@ -19,20 +19,12 @@ Page({
     recentMovieLoadStatus: 0, // 0:loading, 1:success, 2:fail
     taggedMovieLoadStatus: 0, // 同上
   },
-  preventTouchMove: function () {
-    return true
-  },
   onLoad: function () {
     this.loadLatestMovies()
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
   },
   onReachBottom: function() {
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
-  },
-  onPullDownRefresh: function() {
-    this.resetPage()
-    this.onLoad()
-    wx.stopPullDownRefresh()
   },
   processRecentMovieInfo: function(recentMovieInfo) {
     for (let subject of recentMovieInfo.subjects) {
@@ -207,23 +199,20 @@ Page({
   onMaskTap: function() {
     this.setData({ showModal: false })
   },
+  onRefreshRecentMovieList: function() {
+    this.setData({ recentMovieLoadStatus: 0 })
+    this.loadLatestMovies()
+  },
+  onRefreshTaggedMovieList: function() {
+    this.resetTaggedMovieList()
+    this.setData({ taggedMovieLoadStatus: 0 })
+    this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
+  },
   resetMovieItem: function() {
     this.setData({ movieItem: null })
-  },
-  resetRecentMovieList: function () {
-    this.setData({ recentMovieList: [] })
   },
   resetTaggedMovieList: function() {
     this.setData({ movieOffset: 0 })
     this.setData({ taggedMovieList: [] })
-  },
-  resetPage: function() {
-    this.setData({ recentMovieLoadStatus: 0 })
-    this.setData({ taggedMovieLoadStatus: 0 })
-    this.setData({ showModal: false })
-
-    this.resetRecentMovieList()
-    this.resetTaggedMovieList()
-    this.resetMovieItem()
   }
 })

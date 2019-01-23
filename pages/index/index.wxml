@@ -38,7 +38,7 @@
       <view class='loader'></view>
     </view>
     <view wx:if='{{recentMovieLoadStatus == 2 && recentMovieList.length == 0}}' class='error_placeholder'>
-      <text>服务器开小差了，下拉刷新一下试试吧^_^</text>
+      <view>服务器开小差了，<text class='refresh_btn' bindtap='onRefreshRecentMovieList'>刷新</text>一下试试吧^_^</view>
     </view>
     <view wx:if='{{recentMovieLoadStatus != 0 && recentMovieList.length != 0}}'>
       <view class='arrow arrow-left'></view>
@@ -71,7 +71,7 @@
       <view class='loader'></view>
     </view>
     <view wx:if='{{taggedMovieLoadStatus == 2 && taggedMovieList.length == 0}}' class='error_placeholder'>
-      <text>服务器开小差了，下拉刷新一下试试吧^_^</text>
+      <view>服务器开小差了，<text class='refresh_btn' bindtap='onRefreshTaggedMovieList'>刷新</text>一下试试吧^_^</view>
     </view>
     <view wx:if='{{taggedMovieLoadStatus != 0 && taggedMovieList.length != 0}}' class='category_movie_list'>
       <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' >

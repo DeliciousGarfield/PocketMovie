@@ -216,3 +216,8 @@
   margin-left: 5rpx;
   color: gold;
 }
+
+.refresh_btn {
+  font-weight: bold;
+  text-decoration: underline;
+}
