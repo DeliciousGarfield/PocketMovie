@@ -18,10 +18,20 @@ Page({
     movieItem: null,
     recentMovieLoadStatus: 0, // 0:loading, 1:success, 2:fail
     taggedMovieLoadStatus: 0, // 同上
+    watchList: null
   },
   onLoad: function () {
+    this.setWatchList(app.globalData.watchList)
     this.loadLatestMovies()
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
+  },
+  setWatchList: function(aWatchList) {
+    let watchList = {}
+    for (let movieId of aWatchList) {
+      watchList[movieId] = null
+    }
+
+    this.setData({ watchList: watchList })
   },
   onReachBottom: function() {
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
@@ -207,6 +217,21 @@ Page({
     this.resetTaggedMovieList()
     this.setData({ taggedMovieLoadStatus: 0 })
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
+  },
+  onMovieItemCheckboxChange: function(e) {
+    let movieItemIds = new Set(this.data.taggedMovieList.map(movieItem => movieItem.id))
+    let checkedMovieItemIds = new Set(e.detail.value)
+    let unCheckedMovieItem = new Set([...movieItemIds].filter(x => !checkedMovieItemIds.has(x)))
+    
+    let oldWatchList = []
+    for (let movieId in this.data.watchList) {
+      oldWatchList.push(movieId)
+    }
+
+    let watchList = new Set([...oldWatchList, ...checkedMovieItemIds])
+    watchList = new Set([...watchList].filter(x => !unCheckedMovieItem.has(x)))
+
+    this.setWatchList(watchList)
   },
   resetMovieItem: function() {
     this.setData({ movieItem: null })

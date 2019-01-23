@@ -30,6 +30,7 @@
     </view>
   </view>
 
+  
   <view class='recent_movie'>
     <view>
       <text class='section_title'>最近热映</text>
@@ -74,13 +75,18 @@
       <view>服务器开小差了，<text class='refresh_btn' bindtap='onRefreshTaggedMovieList'>刷新</text>一下试试吧^_^</view>
     </view>
     <view wx:if='{{taggedMovieLoadStatus != 0 && taggedMovieList.length != 0}}' class='category_movie_list'>
+      <checkbox-group bindchange='onMovieItemCheckboxChange'>
       <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' >
+          <image mode='aspectFit' src='../../resources/images/stamp.png' class='stamp_icon tagged_movie_stamp_icon' wx:if='{{watchList[item.id] !== undefined}}'></image>
           <image mode='aspectFit' class='movie_cover' src='{{item.cover}}' bindtap='onMovieItemTap' id='{{item.id}}'></image>
           <view class='movie_des'>
             <text class='movie_title'>{{item.title}}</text>
             <text class='movie_rate'>{{item.rate}}</text>
           </view>
-        </view>
+          <checkbox class='movie_item_checkbox' value='{{item.id}}' checked="{{watchList[item.id] !== undefined}}">
+          </checkbox>
+      </view>
+      </checkbox-group>
     </view>
   </view>
 </view>
