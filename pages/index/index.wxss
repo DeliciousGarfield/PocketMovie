@@ -253,6 +253,7 @@
   border-radius: 50rpx;
   background-color: orange;
   color: white;
+  z-index: 20;
 }
 
 .edit_confirm {
