@@ -245,11 +245,12 @@
   position: absolute;
   bottom: 0;
   right: 0;
+  transform: scale(1.5)
 }
 
 .edit_btn {
   position: fixed;
-  border-radius: 100rpx;
+  border-radius: 50rpx;
   background-color: orange;
   color: white;
 }

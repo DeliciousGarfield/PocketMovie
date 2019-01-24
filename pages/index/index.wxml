@@ -11,6 +11,7 @@
       <view class='movie_item_des'>
         <text class='movie_item_title'>{{movieItem.title}}</text>
         <text class='movie_item_rate'>{{movieItem.rating.average.length == 0 ? '暂无' : movieItem.rating.average}}</text>
+        <text wx:if='{{movieItem != null && movieItem.rating.average.length != 0}}'>(豆瓣)</text>
       </view>
     </view>
       <view class='movie_item_details'>
@@ -90,7 +91,7 @@
     </view>
   </view>
   <view wx:if='{{editMode}}'>
-    <button  size='mini' class='edit_btn edit_confirm' bindtap='onEditConfirm'>确认</button>
-    <button  size='mini' class='edit_btn edit_cancel' bindtap='onEditCancel'>取消</button>
+    <button class='edit_btn edit_confirm' bindtap='onEditConfirm'>确认</button>
+    <button class='edit_btn edit_cancel' bindtap='onEditCancel'>取消</button>
   </view>
 </view>
