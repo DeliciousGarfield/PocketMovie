@@ -18,10 +18,12 @@ Page({
     movieItem: null,
     recentMovieLoadStatus: 0, // 0:loading, 1:success, 2:fail
     taggedMovieLoadStatus: 0, // 同上
-    watchList: null
+    watchList: null,
+    editMode: false,
+    oldWatchList: null
   },
   onLoad: function () {
-    this.setWatchList(app.globalData.watchList)
+    this.setWatchList(app.getWatchList())
     this.loadLatestMovies()
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
   },
@@ -206,6 +208,12 @@ Page({
       }
     })
   },
+  onMoiveItemLongTap: function() {
+    if (!this.data.editMode) {
+      this.setData({ oldWatchList: this.data.watchList })
+      this.setData({ editMode: true })      
+    }
+  },
   onMaskTap: function() {
     this.setData({ showModal: false })
   },
@@ -232,6 +240,19 @@ Page({
     watchList = new Set([...watchList].filter(x => !unCheckedMovieItem.has(x)))
 
     this.setWatchList(watchList)
+  },
+  onEditConfirm: function() {
+    let watchList = []
+    for (let movieId in this.data.watchList) {
+      watchList.push(movieId)
+    }
+
+    app.setWatchList(watchList)
+    this.setData({ editMode: false })
+  },
+  onEditCancel: function() {
+    this.setData({ watchList: this.data.oldWatchList })
+    this.setData({ editMode: false})
   },
   resetMovieItem: function() {
     this.setData({ movieItem: null })
