@@ -265,3 +265,21 @@
   right: 10rpx;
   bottom: 10rpx;
 }
+
+.movie_list_filter {
+  font-size: 27rpx;
+  margin-top: 40rpx;
+}
+
+.movie_list_filter label {
+  margin-right: 15rpx;
+  padding:-15rpx;
+}
+
+.movie_list_filter checkbox {
+  transform: scale(0.8)
+}
+
+.movie_list_filter text {
+  margin-left: -5rpx;
+}

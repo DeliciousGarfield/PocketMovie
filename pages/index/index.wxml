@@ -69,6 +69,22 @@
         </label>
       </radio-group>
     </view>
+    <view class='movie_list_filter'>
+      <checkbox-group bindchange='onMovieListFilterChange'>
+        <label>
+          <checkbox checked='{{filterType == 0}}' color='rgb(37, 141, 205)' value='0'/>
+          <text>显示所有</text>
+        </label>
+        <label>
+          <checkbox checked='{{filterType == 1}}' color='rgb(37, 141, 205)' value='1'/>
+          <text>我看过</text>
+        </label>
+        <label>
+          <checkbox checked='{{filterType == 2}}' color='rgb(37, 141, 205)' value='2'/>
+          <text>我没看过</text>
+        </label>
+      </checkbox-group>
+    </view>
     <view wx:if='{{taggedMovieLoadStatus == 0}}' class='loader_container'>
       <view class='loader'></view>
     </view>
@@ -77,7 +93,7 @@
     </view>
     <view wx:if='{{taggedMovieLoadStatus != 0 && taggedMovieList.length != 0}}' class='category_movie_list'>
       <checkbox-group bindchange='onMovieItemCheckboxChange'>
-      <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' >
+      <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' wx:if='{{filterType == 0 || (filterType == 1 && watchList[item.id] !== undefined) || (filterType == 2 && watchList[item.id] === undefined) }}'>
           <image mode='aspectFit' src='../../resources/images/stamp.png' class='stamp_icon tagged_movie_stamp_icon' wx:if='{{watchList[item.id] !== undefined}}'></image>
           <image mode='aspectFit' class='movie_cover' src='{{item.cover}}' bindtap='onMovieItemTap' bindlongpress='onMoiveItemLongTap' id='{{item.id}}'></image>
           <view class='movie_des'>

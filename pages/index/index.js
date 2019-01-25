@@ -20,7 +20,8 @@ Page({
     taggedMovieLoadStatus: 0, // 同上
     watchList: null,
     editMode: false,
-    oldWatchList: null
+    oldWatchList: null,
+    filterType: 2
   },
   onLoad: function () {
     this.setWatchList(app.getWatchList())
@@ -253,6 +254,13 @@ Page({
   onEditCancel: function() {
     this.setData({ watchList: this.data.oldWatchList })
     this.setData({ editMode: false})
+  },
+  onMovieListFilterChange: function(e) {
+    for (let filterType of e.detail.value) {
+      if (!(filterType == this.data.filterType)) {
+        this.setData({ filterType: filterType})
+      }
+    }
   },
   resetMovieItem: function() {
     this.setData({ movieItem: null })
