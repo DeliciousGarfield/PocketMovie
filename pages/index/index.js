@@ -256,9 +256,11 @@ Page({
     this.setData({ editMode: false})
   },
   onMovieListFilterChange: function(e) {
-    for (let filterType of e.detail.value) {
-      if (!(filterType == this.data.filterType)) {
-        this.setData({ filterType: filterType})
+    if (e.detail.value.length != 0) {
+      for (let filterType of e.detail.value) {
+        if (!(filterType == this.data.filterType)) {
+          this.setData({ filterType: filterType })
+        }
       }
     }
   },

@@ -72,15 +72,15 @@
     <view class='movie_list_filter'>
       <checkbox-group bindchange='onMovieListFilterChange'>
         <label>
-          <checkbox checked='{{filterType == 0}}' color='rgb(37, 141, 205)' value='0'/>
+          <checkbox checked='{{filterType == 0}}' disabled='{{filterType == 0}}' color='rgb(37, 141, 205)' value='0'/>
           <text>显示所有</text>
         </label>
         <label>
-          <checkbox checked='{{filterType == 1}}' color='rgb(37, 141, 205)' value='1'/>
+          <checkbox checked='{{filterType == 1}}' disabled='{{filterType == 1}}' color='rgb(37, 141, 205)' value='1'/>
           <text>我看过</text>
         </label>
         <label>
-          <checkbox checked='{{filterType == 2}}' color='rgb(37, 141, 205)' value='2'/>
+          <checkbox checked='{{filterType == 2}}' disabled='{{filterType == 2}}' color='rgb(37, 141, 205)' value='2'/>
           <text>我没看过</text>
         </label>
       </checkbox-group>
