@@ -21,7 +21,9 @@ Page({
     watchList: null,
     editMode: false,
     oldWatchList: null,
-    filterType: 2
+    filterType: 2,
+    currentWatched: null,
+    currentUnwatched: null
   },
   onLoad: function () {
     this.setWatchList(app.getWatchList())
@@ -130,12 +132,30 @@ Page({
       }
     })
   },
+  refreshCurrentWatchState: function (taggedMovieList) {
+    let currentWatched = {}
+    let currentUnwatched = {}
+    let watchList = new Set(app.getWatchList())
+    for (let movieItem of taggedMovieList) {
+      if (watchList.has(movieItem.id)) {
+        currentWatched[movieItem.id] = null
+      }
+      else {
+        currentUnwatched[movieItem.id] = null
+      }
+    }
+
+    this.setData({ currentWatched: currentWatched })
+    this.setData({ currentUnwatched: currentUnwatched })
+  },
   loadMovieByTag: function(tag) {
     let onSuccess = (res) => {
       let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
       let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
       this.setData({ taggedMovieList: taggedMovieList })
       this.setData({ taggedMovieLoadStatus: 1 })
+
+      this.refreshCurrentWatchState(taggedMovieList)
     }
 
     let onError = (err) => {
@@ -228,17 +248,35 @@ Page({
     this.loadMovieByTag(this.data.movieType[this.data.movieTypeIndex])
   },
   onMovieItemCheckboxChange: function(e) {
-    let movieItemIds = new Set(this.data.taggedMovieList.map(movieItem => movieItem.id))
     let checkedMovieItemIds = new Set(e.detail.value)
-    let unCheckedMovieItem = new Set([...movieItemIds].filter(x => !checkedMovieItemIds.has(x)))
-    
+    let unCheckedMovieItemIds = new Set()
+
+    if (this.data.filterType == 0) {
+      let movieItemIds = new Set(this.data.taggedMovieList.map(movieItem => movieItem.id))
+      unCheckedMovieItemIds = new Set([...movieItemIds].filter(x => !checkedMovieItemIds.has(x)))
+    }
+    else if (this.data.filterType == 1) {
+      for (let movieId in this.data.currentWatched) {
+        if (!checkedMovieItemIds.has(movieId)) {
+          unCheckedMovieItemIds.add(movieId)
+        }
+      }
+    }
+    else if (this.data.filterType == 2) {
+      for (let movieId in this.data.currentUnwatched) {
+        if (!checkedMovieItemIds.has(movieId)) {
+          unCheckedMovieItemIds.add(movieId)
+        }
+      }
+    }
+
     let oldWatchList = []
     for (let movieId in this.data.watchList) {
       oldWatchList.push(movieId)
     }
 
     let watchList = new Set([...oldWatchList, ...checkedMovieItemIds])
-    watchList = new Set([...watchList].filter(x => !unCheckedMovieItem.has(x)))
+    watchList = new Set([...watchList].filter(x => !unCheckedMovieItemIds.has(x)))
 
     this.setWatchList(watchList)
   },
@@ -250,6 +288,8 @@ Page({
 
     app.setWatchList(watchList)
     this.setData({ editMode: false })
+
+    this.refreshCurrentWatchState(this.data.taggedMovieList)
   },
   onEditCancel: function() {
     this.setData({ watchList: this.data.oldWatchList })
