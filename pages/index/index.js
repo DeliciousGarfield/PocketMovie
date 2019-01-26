@@ -23,7 +23,8 @@ Page({
     oldWatchList: null,
     filterType: 2,
     currentWatched: null,
-    currentUnwatched: null
+    currentUnwatched: null,
+    hasCurrentWatched: false
   },
   onLoad: function () {
     this.setWatchList(app.getWatchList())
@@ -145,6 +146,12 @@ Page({
       }
     }
 
+    if (Object.keys(currentWatched).length != 0) {
+      this.setData({ hasCurrentWatched: true})
+    }
+    else {
+      this.setData({ hasCurrentWatched: false })
+    }
     this.setData({ currentWatched: currentWatched })
     this.setData({ currentUnwatched: currentUnwatched })
   },

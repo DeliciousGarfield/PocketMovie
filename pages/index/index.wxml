@@ -91,6 +91,9 @@
     <view wx:if='{{taggedMovieLoadStatus == 2 && taggedMovieList.length == 0}}' class='error_placeholder'>
       <view>服务器开小差了，<text class='refresh_btn' bindtap='onRefreshTaggedMovieList'>刷新</text>一下试试吧^_^</view>
     </view>
+    <view wx:if='{{!hasCurrentWatched && filterType == 1}}'  class='error_placeholder'>
+      <view>先在看过的电影上长按完成标记，再回来看看吧</view>
+    </view>
     <view wx:if='{{taggedMovieLoadStatus != 0 && taggedMovieList.length != 0}}' class='category_movie_list'>
       <checkbox-group bindchange='onMovieItemCheckboxChange'>
       <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' wx:if='{{filterType == 0 || (filterType == 1 && currentWatched[item.id] !== undefined) || (filterType == 2 && currentUnwatched[item.id] !== undefined) }}'>
