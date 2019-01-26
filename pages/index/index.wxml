@@ -96,7 +96,17 @@
     </view>
     <view wx:if='{{taggedMovieLoadStatus != 0 && taggedMovieList.length != 0}}' class='category_movie_list'>
       <checkbox-group bindchange='onMovieItemCheckboxChange'>
-      <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' wx:if='{{filterType == 0 || (filterType == 1 && currentWatched[item.id] !== undefined) || (filterType == 2 && currentUnwatched[item.id] !== undefined) }}'>
+      <view class='movie_preview' wx:for='{{taggedMovieList}}' wx:key='{{index}}' wx:if='{{filterType == 0}}'>
+        <image mode='aspectFit' src='../../resources/images/stamp.png' class='stamp_icon tagged_movie_stamp_icon' wx:if='{{watchList[item.id] !== undefined}}'></image>
+          <image mode='aspectFit' class='movie_cover' src='{{item.cover}}' bindtap='onMovieItemTap' bindlongpress='onMoiveItemLongTap' id='{{item.id}}'></image>
+          <view class='movie_des'>
+            <text class='movie_title'>{{item.title}}</text>
+            <text class='movie_rate'>{{item.rate}}</text>
+          </view>
+          <checkbox wx:if='{{editMode}}' class='movie_item_checkbox' value='{{item.id}}' checked="{{watchList[item.id] !== undefined}}">
+          </checkbox>
+      </view>
+      <view class='movie_preview' wx:for='{{taggedMovieListStore}}' wx:key='{{index}}' wx:if='{{(filterType == 1 && currentWatched[item.id] !== undefined) || (filterType == 2 && currentUnwatched[item.id] !== undefined) }}'>
           <image mode='aspectFit' src='../../resources/images/stamp.png' class='stamp_icon tagged_movie_stamp_icon' wx:if='{{watchList[item.id] !== undefined}}'></image>
           <image mode='aspectFit' class='movie_cover' src='{{item.cover}}' bindtap='onMovieItemTap' bindlongpress='onMoiveItemLongTap' id='{{item.id}}'></image>
           <view class='movie_des'>

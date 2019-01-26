@@ -26,7 +26,8 @@ Page({
     currentWatched: null,
     currentUnwatched: null,
     hasCurrentWatched: false,
-    taggedMovieEnd: false
+    taggedMovieEnd: false,
+    taggedMovieListStore: null
   },
   onLoad: function () {
     this.setWatchList(app.getWatchList())
@@ -169,6 +170,7 @@ Page({
     this.setData({ currentUnwatched: currentUnwatched })
   },
   loadMovieByTag: function(tag) {
+    let taggedMovieListStore = app.getTaggedMovieListStore(tag)
     if (!this.data.taggedMovieEnd) {
       let taggedMovieListCache = app.getTaggedMovieListCache(tag)
       if (taggedMovieListCache != undefined && new Date().getTime() - taggedMovieListCache.cacheTime <= taggedMovieListCache.expireTime && taggedMovieListCache.cacheItem.length > this.data.movieOffset) {
@@ -180,8 +182,9 @@ Page({
         if (newLoadedMovieList.length == 0) {
           this.setData({ taggedMovieEnd: true })
         }
-        this.refreshCurrentWatchState(taggedMovieList)
-        console.log(this.data.movieOffset)
+
+        this.setData({ taggedMovieListStore: taggedMovieListStore})
+        this.refreshCurrentWatchState(taggedMovieListStore)
       }
       else {
         let onSuccess = (res) => {
@@ -197,7 +200,18 @@ Page({
           let taggedMovieListCache = new Cache(taggedMovieList, new Date().getTime(), MILLISECONDS_PER_DAY)
           app.setTaggedMovieListCache(tag, taggedMovieListCache)
 
-          this.refreshCurrentWatchState(taggedMovieList)
+          let taggedMovieListStoreMovieIds = new Set(taggedMovieListStore.map(movieItem => movieItem.id))
+          
+          for (let movieItem of taggedMovieList) {
+            if (!taggedMovieListStoreMovieIds.has(movieItem.id)) {
+              taggedMovieListStore.push(movieItem)
+            }
+          }
+          
+          app.setTaggedMovieListStore(tag, taggedMovieListStore)
+
+          this.setData({ taggedMovieListStore: taggedMovieListStore })
+          this.refreshCurrentWatchState(taggedMovieListStore)
         }
 
         let onError = (err) => {
@@ -340,7 +354,8 @@ Page({
     app.setWatchList(watchList)
     this.setData({ editMode: false })
 
-    this.refreshCurrentWatchState(this.data.taggedMovieList)
+    let taggedMovieListStore = app.getTaggedMovieListStore(this.data.movieType[this.data.movieTypeIndex])
+    this.refreshCurrentWatchState(taggedMovieListStore)
   },
   onEditCancel: function() {
     this.setData({ watchList: this.data.oldWatchList })

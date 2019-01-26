@@ -37,10 +37,19 @@ App({
     this.globalData.taggedMovieListCache = taggedMovieListCache
     wx.setStorageSync(`taggedMovieListCache-${tag}`, this.globalData.taggedMovieListCache)
   },
+  getTaggedMovieListStore: function(tag) {
+    this.globalData.taggedMovieListStore = wx.getStorageSync(`taggedMovieListStore-${tag}`) || []
+    return this.globalData.taggedMovieListStore
+  },
+  setTaggedMovieListStore: function(tag, taggedMovieListStore) {
+    this.globalData.taggedMovieListStore = taggedMovieListStore
+    wx.setStorageSync(`taggedMovieListStore-${tag}`, this.globalData.taggedMovieListStore)
+  },
   globalData: {
     watchList: null,
     recentMovieListCache: null,
     movieItemCache: null,
-    taggedMovieListCache: null
+    taggedMovieListCache: null,
+    taggedMovieListStore: null
   }
 })
