@@ -1,10 +1,10 @@
 //app.js
 
+import { Cache } from 'utils/cache.js'
+
 App({
   onLaunch: function () {
     this.globalData.watchList = wx.getStorageSync('watchList') || []
-    this.globalData.lauchCount = wx.getStorageSync('lauchCount') || 0
-    this.addLauchCount()
   },
   getWatchList: function() {
     return this.globalData.watchList
@@ -13,15 +13,34 @@ App({
     this.globalData.watchList = watchList
     wx.setStorageSync('watchList', this.globalData.watchList)
   },
-  getLauchCount: function() {
-    return this.globalData.lauchCount
+  getRecentMovieListCache: function() {
+    this.globalData.recentMovieListCache = wx.getStorageSync('recentMovieListCache') || undefined
+    return this.globalData.recentMovieListCache
   },
-  addLauchCount: function() {
-    this.globalData.lauchCount += 1
-    wx.setStorageSync('lauchCount', this.globalData.lauchCount)
+  setRecentMovieListCache: function (recentMovieListCache) {
+    this.globalData.recentMovieListCache = recentMovieListCache
+    wx.setStorageSync('recentMovieListCache', this.globalData.recentMovieListCache)
+  },
+  getMovieItemCache: function(movieId) {
+    this.globalData.movieItemCache = wx.getStorageSync(`movieItemCache-${movieId}`) || undefined
+    return this.globalData.movieItemCache
+  },
+  setMovieItemCache: function (movieId, movieItemCache) {
+    this.globalData.movieItemCache = movieItemCache
+    wx.setStorageSync(`movieItemCache-${movieId}`, this.globalData.movieItemCache)
+  },
+  getTaggedMovieListCache: function(tag) {
+    this.globalData.taggedMovieListCache = wx.getStorageSync(`taggedMovieListCache-${tag}`) || undefined
+    return this.globalData.taggedMovieListCache
+  },
+  setTaggedMovieListCache: function (tag, taggedMovieListCache) {
+    this.globalData.taggedMovieListCache = taggedMovieListCache
+    wx.setStorageSync(`taggedMovieListCache-${tag}`, this.globalData.taggedMovieListCache)
   },
   globalData: {
     watchList: null,
-    lauchCount: 0
+    recentMovieListCache: null,
+    movieItemCache: null,
+    taggedMovieListCache: null
   }
 })

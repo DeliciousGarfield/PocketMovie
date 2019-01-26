@@ -1,6 +1,7 @@
 //index.js
 
-import { taggedMovieApi, latestMovieApi, movieItemApi } from '../../constants/constants.js'
+import { taggedMovieApi, latestMovieApi, movieItemApi, MILLISECONDS_PER_DAY } from '../../constants/constants.js'
+import { Cache } from '../../utils/cache.js'
 
 //获取应用实例
 const app = getApp()
@@ -24,7 +25,8 @@ Page({
     filterType: 2,
     currentWatched: null,
     currentUnwatched: null,
-    hasCurrentWatched: false
+    hasCurrentWatched: false,
+    taggedMovieEnd: false
   },
   onLoad: function () {
     this.setWatchList(app.getWatchList())
@@ -104,34 +106,45 @@ Page({
     this.loadMovieByTag(this.data.movieType[movieTypeIndex])
   },
   loadLatestMovies: function() {
-    let onSuccess = (res) => {
-      let recentMovieInfo = this.processRecentMovieInfo(res.data)
-      this.setData({ recentMovieList: recentMovieInfo.subjects })
+    let recentMovieListCache = app.getRecentMovieListCache()
+    if (recentMovieListCache != undefined && new Date().getTime() - recentMovieListCache.cacheTime <= recentMovieListCache.expireTime) {
+      this.setData({ recentMovieList: recentMovieListCache.cacheItem })
       this.setData({ recentMovieLoadStatus: 1 })
     }
+    else {
+      let onSuccess = (res) => {
+        let recentMovieInfo = this.processRecentMovieInfo(res.data)
+        let recentMovieList = recentMovieInfo.subjects
+        this.setData({ recentMovieList: recentMovieList })
+        this.setData({ recentMovieLoadStatus: 1 })
 
-    let onError = (err) => {
-      setTimeout(() => this.setData({ recentMovieLoadStatus: 2 }), 1000)
-      console.log(err)
-    }
-
-    wx.request({
-      url: `${latestMovieApi}`,
-      header: {
-        'content-type': 'json'
-      },
-      success: res => {
-        if (res.statusCode == 200) {
-          onSuccess(res)
-        }
-        else {
-          onError(res)
-        } 
-      },
-      fail: err => {
-        onError(err)
+        let recentMovieListCache = new Cache(recentMovieList, new Date().getTime(), MILLISECONDS_PER_DAY)
+        app.setRecentMovieListCache(recentMovieListCache)
       }
-    })
+
+      let onError = (err) => {
+        setTimeout(() => this.setData({ recentMovieLoadStatus: 2 }), 1000)
+        console.log(err)
+      }
+
+      wx.request({
+        url: `${latestMovieApi}`,
+        header: {
+          'content-type': 'json'
+        },
+        success: res => {
+          if (res.statusCode == 200) {
+            onSuccess(res)
+          }
+          else {
+            onError(res)
+          }
+        },
+        fail: err => {
+          onError(err)
+        }
+      })
+    }
   },
   refreshCurrentWatchState: function (taggedMovieList) {
     let currentWatched = {}
@@ -156,85 +169,116 @@ Page({
     this.setData({ currentUnwatched: currentUnwatched })
   },
   loadMovieByTag: function(tag) {
-    let onSuccess = (res) => {
-      let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
-      let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
-      this.setData({ taggedMovieList: taggedMovieList })
-      this.setData({ taggedMovieLoadStatus: 1 })
+    if (!this.data.taggedMovieEnd) {
+      let taggedMovieListCache = app.getTaggedMovieListCache(tag)
+      if (taggedMovieListCache != undefined && new Date().getTime() - taggedMovieListCache.cacheTime <= taggedMovieListCache.expireTime && taggedMovieListCache.cacheItem.length > this.data.movieOffset) {
+        let newLoadedMovieList = taggedMovieListCache.cacheItem.slice(this.data.movieOffset, this.data.movieOffset + this.data.movieLoadCount)
+        let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieList)
+        this.setData({ taggedMovieList: taggedMovieList })
+        this.setData({ taggedMovieLoadStatus: 1 })
+        this.setData({ movieOffset: this.data.movieOffset + newLoadedMovieList.length })
+        if (newLoadedMovieList.length == 0) {
+          this.setData({ taggedMovieEnd: true })
+        }
+        this.refreshCurrentWatchState(taggedMovieList)
+        console.log(this.data.movieOffset)
+      }
+      else {
+        let onSuccess = (res) => {
+          let newLoadedMovieInfo = this.processTaggedMovieInfo(res.data)
+          let taggedMovieList = this.data.taggedMovieList.concat(newLoadedMovieInfo.subjects)
+          this.setData({ taggedMovieList: taggedMovieList })
+          this.setData({ taggedMovieLoadStatus: 1 })
+          this.setData({ movieOffset: this.data.movieOffset + newLoadedMovieInfo.subjects.length })
+          if (newLoadedMovieInfo.subjects.length == 0) {
+            this.setData({ taggedMovieEnd: true})
+          }
 
-      this.refreshCurrentWatchState(taggedMovieList)
-    }
+          let taggedMovieListCache = new Cache(taggedMovieList, new Date().getTime(), MILLISECONDS_PER_DAY)
+          app.setTaggedMovieListCache(tag, taggedMovieListCache)
 
-    let onError = (err) => {
-      setTimeout(() => this.setData({ taggedMovieLoadStatus: 2 }), 1000)
-      if (this.data.taggedMovieList.length != 0) {
-        wx.showToast({
-          title: '获取更多内容失败，请稍后重试',
-          icon: 'none',
-          duration: 2000
+          this.refreshCurrentWatchState(taggedMovieList)
+        }
+
+        let onError = (err) => {
+          setTimeout(() => this.setData({ taggedMovieLoadStatus: 2 }), 1000)
+          if (this.data.taggedMovieList.length != 0) {
+            wx.showToast({
+              title: '获取更多内容失败，请稍后重试',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+
+          console.log(err)
+        }
+
+        wx.request({
+          url: `${taggedMovieApi}?sort=rank&tag=${tag}&page_limit=${this.data.movieLoadCount}&page_start=${this.data.movieOffset}`,
+          header: {
+            'content-type': 'json'
+          },
+          success: res => {
+            if (res.statusCode == 200) {
+              onSuccess(res)
+            }
+            else {
+              onError(res)
+            }
+          },
+          fail: err => {
+            onError(err)
+          }
         })
       }
-
-      console.log(err)
     }
-
-    wx.request({
-      url: `${taggedMovieApi}?sort=rank&tag=${tag}&page_limit=${this.data.movieLoadCount}&page_start=${this.data.movieOffset}`,
-      header: {
-        'content-type': 'json'
-      },
-      success: res => {
-        if (res.statusCode == 200) {
-          onSuccess(res)
-        }
-        else {
-          onError(res)
-        }
-      },
-      fail: err => {
-        onError(err)
-      }
-    })
-
-    this.setData({ movieOffset: this.data.movieOffset + this.data.movieLoadCount})
   },
   onMovieItemTap: function(e) {
     this.resetMovieItem()
     this.setData({ showModal: true })
     let movieItemId = e.currentTarget.id
 
-    let onSuccess = (res) => {
-      let movieItem = this.processMovieItem(res.data)
-      this.setData({ movieItem: movieItem })
+    let movieItemCache = app.getMovieItemCache(movieItemId)
+    if (movieItemCache != undefined && new Date().getTime() - movieItemCache.cacheTime <= movieItemCache.expireTime) {
+      this.setData({ movieItem: movieItemCache.cacheItem })
     }
+    else {
+      let onSuccess = (res) => {
+        let movieItem = this.processMovieItem(res.data)
+        this.setData({ movieItem: movieItem })
 
-    let onError = (err) => {
-      setTimeout(() => this.setData({ showModal: false }), 1000)
-      wx.showToast({
-        title: '加载失败，请稍后重试',
-        icon: 'none',
-        duration: 2000
-      })
-      console.log(err)
-    }
-
-    wx.request({
-      url: `${movieItemApi}/${movieItemId}`,
-      header: {
-        'content-type': 'json'
-      },
-      success: res => {
-        if (res.statusCode == 200) {
-          onSuccess(res)
-        }
-        else {
-          onError(res)
-        }
-      },
-      fail: err => {
-        onError(err)
+        let movieItemCache = new Cache(movieItem, new Date().getTime(), MILLISECONDS_PER_DAY * 7)
+        app.setMovieItemCache(movieItemId, movieItemCache)
       }
-    })
+
+      let onError = (err) => {
+        setTimeout(() => this.setData({ showModal: false }), 1000)
+        wx.showToast({
+          title: '加载失败，请稍后重试',
+          icon: 'none',
+          duration: 2000
+        })
+        console.log(err)
+      }
+
+      wx.request({
+        url: `${movieItemApi}/${movieItemId}`,
+        header: {
+          'content-type': 'json'
+        },
+        success: res => {
+          if (res.statusCode == 200) {
+            onSuccess(res)
+          }
+          else {
+            onError(res)
+          }
+        },
+        fail: err => {
+          onError(err)
+        }
+      })
+    }
   },
   onMoiveItemLongTap: function() {
     if (!this.data.editMode) {
@@ -317,5 +361,6 @@ Page({
   resetTaggedMovieList: function() {
     this.setData({ movieOffset: 0 })
     this.setData({ taggedMovieList: [] })
+    this.setData({ taggedMovieEnd: false})
   }
 })
